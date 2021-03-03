@@ -1,19 +1,13 @@
 const serveError = require('serve-handler/src/error')
 const serveHandler = require('serve-handler')
-const PrettyError = require('pretty-error')
 const createExpress = require('express')
 const statuses = require('statuses')
 const dotenv = require('dotenv')
 const environment = require('./node-env')
 const knock = require('./knock')
 const PORT = process.env.PORT || 4567
-const pe = new PrettyError()
 
 function errorHandler(error, request, response, next) {
-  if (environment === 'development') {
-    console.log(pe.render(error))
-  }
-
   if (error.name === 'UnauthorizedError') {
     return response.status(401).json({
       message: statuses[401]
@@ -43,6 +37,11 @@ class Mosh {
     this.application = createExpress()
   }
 
+  prepare() {
+    this.application.use(errorHandler)
+    this.application.get('*', noMatchHandler)
+  }
+
   use(...args) {
     this.application.use(...args)
   }
@@ -52,8 +51,6 @@ class Mosh {
   }
 
   start() {
-    this.application.use(errorHandler)
-    this.application.get('*', noMatchHandler)
     this.application.listen(PORT, () => {
       console.log(`* Listening on http://localhost:${PORT}`)
       console.log('* Use Ctrl-C to stop')
