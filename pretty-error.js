@@ -10,4 +10,4 @@ function prettyError(error, request, response, next) {
   next(error)
 }
 
-module.exports = prettyError
+module.exports = () => prettyError

@@ -37,7 +37,7 @@ class Mosh {
     this.application = createExpress()
   }
 
-  prepare() {
+  bootstrap() {
     this.application.use(errorHandler)
     this.application.get('*', noMatchHandler)
   }
@@ -51,6 +51,7 @@ class Mosh {
   }
 
   start() {
+    this.bootstrap()
     this.application.listen(PORT, () => {
       console.log(`* Listening on http://localhost:${PORT}`)
       console.log('* Use Ctrl-C to stop')
